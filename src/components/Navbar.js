@@ -3,23 +3,27 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const isLoggedIn = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const userRole = user.role;
-  const userEmail = user.email;
+  
+  // Get user data from localStorage
+  const getCurrentUser = () => {
+    try {
+      const userStr = localStorage.getItem('user');
+      return userStr ? JSON.parse(userStr) : null;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  };
+
+  const currentUser = getCurrentUser();
+  const isLoggedIn = !!localStorage.getItem('token');
+  const userRole = currentUser?.role;
 
   const handleLogout = () => {
-    // Clear all user data
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    
-    // Redirect to home
     navigate('/');
-    
-    // Force reload to update navbar
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
+    setTimeout(() => window.location.reload(), 100);
   };
 
   return (
@@ -34,38 +38,56 @@ const Navbar = () => {
         
         {isLoggedIn ? (
           <>
-            {/* Show user info */}
-            <div style={styles.userInfo}>
-              <span style={styles.userEmail}>{userEmail}</span>
-              <span style={styles.userRole}>({userRole})</span>
+            {/* Show user role */}
+            <div style={styles.userRole}>
+              <span style={{
+                ...styles.roleBadge,
+                backgroundColor: userRole === 'ADMIN' ? '#e74c3c' : 
+                               userRole === 'STAFF' ? '#3498db' : '#2ecc71'
+              }}>
+                {userRole}
+              </span>
             </div>
             
-            {/* Show dashboard based on role */}
-            <Link to="/dashboard" style={styles.link}>Dashboard</Link>
-            
-            {/* Show "My Vehicles" only for CUSTOMERS, not for ADMIN or STAFF */}
-            {userRole === 'CUSTOMER' && (
-              <Link to="/vehicles" style={styles.link}>My Vehicles</Link>
-            )}
-            
-            {/* Admin specific links */}
+            {/* ADMIN SPECIFIC LINKS */}
             {userRole === 'ADMIN' && (
-              <Link to="/admin" style={styles.link}>Admin Dashboard</Link>
+              <>
+                <Link to="/admin" style={styles.adminLink}>Admin Dashboard</Link>
+                <Link to="/admin" onClick={() => {/* Will be handled by dashboard tabs */}} style={styles.link}>
+                  Manage Services
+                </Link>
+                <Link to="/admin" onClick={() => {/* Will be handled by dashboard tabs */}} style={styles.link}>
+                  View Reports
+                </Link>
+              </>
             )}
             
-            {/* Staff specific links */}
+            {/* CUSTOMER SPECIFIC LINKS */}
+            {userRole === 'CUSTOMER' && (
+              <>
+                <Link to="/dashboard" style={styles.link}>Dashboard</Link>
+                <Link to="/book" style={styles.link}>Book Service</Link>
+                <Link to="/bookings" style={styles.link}>My Bookings</Link>
+                <Link to="/vehicles" style={styles.link}>My Vehicles</Link>
+              </>
+            )}
+            
+            {/* STAFF SPECIFIC LINKS */}
             {userRole === 'STAFF' && (
-              <Link to="/staff" style={styles.link}>Staff Dashboard</Link>
+              <>
+                <Link to="/dashboard" style={styles.link}>Staff Dashboard</Link>
+                <Link to="#" style={styles.link}>Today's Schedule</Link>
+                <Link to="#" style={styles.link}>Assigned Jobs</Link>
+              </>
             )}
             
-            {/* Logout button */}
+            {/* Common logout for all */}
             <button onClick={handleLogout} style={styles.logoutBtn}>
               Logout
             </button>
           </>
         ) : (
           <>
-            {/* Show login/register when not logged in */}
             <Link to="/login" style={styles.link}>Login</Link>
             <Link to="/register" style={styles.link}>Register</Link>
           </>
@@ -92,9 +114,6 @@ const styles = {
   logoLink: {
     color: 'white',
     textDecoration: 'none',
-    '&:hover': {
-      color: '#3498db'
-    }
   },
   navLinks: {
     display: 'flex',
@@ -107,36 +126,35 @@ const styles = {
     padding: '0.5rem 1rem',
     borderRadius: '4px',
     transition: 'background-color 0.3s',
-    '&:hover': {
-      backgroundColor: 'rgba(255,255,255,0.1)'
-    }
   },
-  userInfo: {
-    display: 'flex',
-    flexDirection: 'column',
-    fontSize: '0.8rem',
-    color: '#bdc3c7',
-    marginRight: '0.5rem'
-  },
-  userEmail: {
-    fontWeight: '500',
+  adminLink: {
+    color: '#e74c3c',
+    textDecoration: 'none',
+    padding: '0.5rem 1rem',
+    borderRadius: '4px',
+    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+    border: '1px solid rgba(231, 76, 60, 0.3)',
+    fontWeight: 'bold',
   },
   userRole: {
-    fontSize: '0.7rem',
-    fontStyle: 'italic',
+    marginRight: '0.5rem',
+  },
+  roleBadge: {
+    padding: '4px 12px',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    color: 'white',
   },
   logoutBtn: {
-    backgroundColor: '#50e73cff',
+    backgroundColor: '#e74c3c',
     color: 'white',
     border: 'none',
     padding: '0.5rem 1rem',
     borderRadius: '4px',
     cursor: 'pointer',
     fontSize: '0.9rem',
-    transition: 'background-color 0.3s',
-    '&:hover': {
-      backgroundColor: '#156e5bff'
-    }
   },
 };
 

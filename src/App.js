@@ -40,48 +40,46 @@ function App() {
       <div className="App">
         <Navbar />
         <div className="main-content">
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/services" element={<Services />} />
-            
-            {/* Protected routes (require login) */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/vehicles" element={
-              <ProtectedRoute>
-                <Vehicles />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/book" element={
-              <ProtectedRoute>
-                <Book />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/bookings" element={
-              <ProtectedRoute>
-                <MyBookings />
-              </ProtectedRoute>
-            } />
-            
-            {/* Admin only route */}
-            <Route path="/admin" element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            } />
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
+                      <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/services" element={<Services />} />
+              
+              {/* Protected routes */}
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/vehicles" element={
+                <ProtectedRoute>
+                  <Vehicles />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/book" element={
+                <ProtectedRoute>
+                  <Book />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/bookings" element={
+                <ProtectedRoute>
+                  <MyBookings />
+                </ProtectedRoute>
+              } />
+              
+              {/* Admin only routes */}
+              <Route path="/admin" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
+            </Routes>
+          
         </div>
         <Footer />
       </div>

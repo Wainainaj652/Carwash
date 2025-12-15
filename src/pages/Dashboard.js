@@ -14,11 +14,28 @@ const Dashboard = () => {
     }
 
     // Get user info from localStorage
-    setUser({
-      email: localStorage.getItem('email'),
-      fullName: localStorage.getItem('fullName'),
-      role: localStorage.getItem('role')
-    });
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const userData = JSON.parse(userStr);
+      setUser({
+        email: userData.email,
+        fullName: userData.fullName,
+        role: userData.role
+      });
+
+      // REDIRECT ADMINS TO ADMIN DASHBOARD
+      if (userData.role === 'ADMIN') {
+        navigate('/admin');
+        return;
+      }
+    } else {
+      // Fallback to localStorage items
+      setUser({
+        email: localStorage.getItem('email'),
+        fullName: localStorage.getItem('fullName'),
+        role: localStorage.getItem('role')
+      });
+    }
   }, [navigate]);
 
   const handleLogout = () => {
@@ -62,11 +79,6 @@ const Dashboard = () => {
                 <h3>My Vehicles</h3>
                 <p>Manage your cars</p>
               </Link>
-              <Link to="/profile" style={styles.card}>
-                <div style={styles.cardIcon}>👤</div>
-                <h3>My Profile</h3>
-                <p>Update your information</p>
-              </Link>
             </div>
           </div>
         )}
@@ -76,14 +88,6 @@ const Dashboard = () => {
           <div style={styles.section}>
             <h2 style={styles.sectionTitle}>Staff Dashboard</h2>
             <p style={styles.message}>Staff dashboard coming soon...</p>
-          </div>
-        )}
-
-        {/* Admin Dashboard */}
-        {user.role === 'ADMIN' && (
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>Admin Dashboard</h2>
-            <p style={styles.message}>Admin dashboard coming soon...</p>
           </div>
         )}
       </div>
